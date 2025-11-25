@@ -1,3 +1,4 @@
+const upload = require('../libs/upload');
 const productModel = require('../models/products.model')
 
 /**
@@ -131,10 +132,55 @@ function deleteProduct(req, res) {
     });
 }
 
+
+/**
+ * POST /products/{id}/upload
+ * @summary Upload a picture for a product
+ * @tags Products
+ * @param {string} id.path.required - Product ID
+ * @param {file} picture.multipartFormData.required - Picture file to upload
+ * @return {object} 200 - Picture uploaded successfully
+ */
+function uploadPictureProduct(req, res) {
+    const id = req.params.id;
+    const product = productModel.getProductById(parseInt(id));
+
+    if (!product) {
+        return res.status(404).json({
+            success: false,
+            message: "Product not found"
+        });
+    }
+
+    upload.single("picture")(req, res, function (err) {
+        if (err) {
+            return res.status(400).json({
+                success: false,
+                message: err.message
+            });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "No file uploaded"
+            });
+        }
+
+        return res.json({
+            success: true,
+            message: "Picture uploaded successfully",
+            file: req.file.filename
+        });
+    });
+}
+
+
 module.exports = {
     getAllProducts,
     getProductsById,
     createNewProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    uploadPictureProduct
 }
