@@ -3,6 +3,7 @@ const app = express();
 const port = 3000;
 const router = require('./src/routers');
 const swaggerjsdoc = require('express-jsdoc-swagger');
+const cleanerFile = require('./src/libs/cleanerFile');
 
 const option = {
     info: {
@@ -21,6 +22,7 @@ const option = {
 
 swaggerjsdoc(app)(option);
 
+cleanerFile()
 app.use(express.static('uploads'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
